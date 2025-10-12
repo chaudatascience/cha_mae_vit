@@ -279,15 +279,6 @@ class Trainer:
             weight_decay=self.cfg.train.weight_decay,
             use_deepspeed=use_deepspeed_opt,
         )
-        # from timm.optim import AdamW
-
-        # optimizer = AdamW(
-        #     params=params_to_optimize,
-        #     lr=learning_rate,
-        #     betas=(self.cfg.train.beta1, self.cfg.train.beta2),
-        #     eps=self.cfg.train.epsilon,
-        #     weight_decay=self.cfg.train.weight_decay,
-        # )
 
         num_update_steps_per_epoch = math.ceil(len(self.train_loader) / self.cfg.train.gradient_accumulation_steps)
         num_warmup_steps = self.cfg.train.lr_warmup_epochs * num_update_steps_per_epoch
@@ -355,30 +346,6 @@ class Trainer:
             return self.accelerator.unwrap_model(self.model)
         else:
             return self.model
-
-    def _debug_forward_pass(self, batch_i, batch, epoch) -> None:
-        print(
-            f"DEBUG: batch_i={batch_i}, batch keys: {list(batch.keys())}, \
-            image shape: {batch['image'].shape}, label shape: {batch['label'].shape}"
-        )
-        self.logger.info(f"DEBUG: batch_i={batch_i}")
-        b = batch["image"].shape[0]
-        ## save 16 images in the batch, note images can have more/fewer than 3 channels
-        imgs = torch.cat([batch["image"][:8], batch["image"][b // 2 : b // 2 + 8]], dim=0)  # (16, c, h, w)
-        n_channels = imgs.shape[1]
-        if n_channels > 3:
-            imgs = imgs[:, :3]  # (16, 3, h, w)
-        elif n_channels == 2:
-            imgs = torch.cat([imgs, torch.zeros_like(imgs[:, :1])], dim=1)  # (16, 3, h, w)
-        elif n_channels == 1:
-            imgs = torch.cat([imgs, torch.zeros_like(imgs[:, :2])], dim=1)  # (16, 3, h, w)
-        datetime_str = datetime_now("%Y%m%d")
-        out_img_folder_ = os.path.join("output_temp", datetime_str)
-        if not os.path.exists(out_img_folder_):
-            os.makedirs(out_img_folder_)
-        out_img_path = os.path.join(out_img_folder_, f"epoch{epoch}_batch{batch_i}_img.png")
-        print(f"Saving debug images to {out_img_path}")
-        save_image(imgs, out_img_path, nrow=4)
 
     def train(self) -> None:
         self.logger.info("Starting training...")
@@ -457,12 +424,6 @@ class Trainer:
             time_end_batch = time.time()
             for batch_i, batch in enumerate(self.train_loader):
                 data_time.update(time.time() - time_end_batch)
-
-                if self.cfg.train.debug:
-                    self._debug_forward_pass(batch_i, batch, epoch)
-                    if batch_i >= 4:
-                        print(f"DEBUG mode: break after {batch_i+1} batches")
-                        break
 
                 with accelerator.accumulate(self.model):
                     if "channel_ids_list" in batch:
