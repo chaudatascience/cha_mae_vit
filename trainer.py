@@ -331,8 +331,11 @@ class Trainer:
             self.model, self.optimizer, self.train_loader, self.valid_loader, self.lr_scheduler
         )
         # Prepare each test_loader in self.test_loaders: dict[str, DataLoader]
-        for k in self.test_loaders:
-            self.test_loaders[k] = self.accelerator.prepare(self.test_loaders[k])
+        if (
+            self.cfg.data.training_dataset != "chammiv1"
+        ):  ## For CHAMMIv1, when using multiple GPUs, each GPU is manually assigned to process one chunk.
+            for k in self.test_loaders:
+                self.test_loaders[k] = self.accelerator.prepare(self.test_loaders[k])
 
         # We need to recalculate our total training steps
         # as `self.train_loader` may be divided by `num_processes`
