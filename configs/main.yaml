@@ -1,0 +1,15 @@
+defaults:
+  - data: train_data
+  - model: multi_channel_vit
+  - logging: wandb
+  - train: train
+  - eval: eval
+  - _self_
+hydra:
+  sweeper:
+    params:
+      data: train_data
+      model: multi_channel_vit
+      logging: wandb
+      train: train
+      eval: eval

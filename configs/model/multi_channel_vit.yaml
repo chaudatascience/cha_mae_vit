@@ -1,0 +1,54 @@
+attention_cls: v2 ## choices: {regular, v1, v2} (default v2).  v1 and v2 is more memory efficient. 
+model_size: small 
+patch_size: 16
+depth: 12
+training_sample: ~ # choices: {hcs, ~}
+init_values: ~ # choices {~, a float number (e.g., 1.0)}. Used for LayerScale in DINOv2. Set to ~ to disable this layer. Refer to https://github.com/facebookresearch/dinov2/blob/main/dinov2/layers/layer_scale.py
+encoder_pooling: cls_token  # choices: {cls_token, cls_attn_pooling_sigmoid, cls_attn_pooling}
+use_channel_tokens: True
+channel_tokens_init: orthogonal # choices: {random, orthogonal, zero}
+use_self_image_norm: False ## if True, apply self-normalization (InstanceNorm2d without learnable parameters) to each channel independently before feeding into the model. 
+num_memory_tokens: 4 ## number of ChA-MAEViT memory tokens
+
+########## LOSSES ##########
+## proxy loss
+proxy_loss_lambda: 0 ## used in CHAMMI for representation learning tasks. Set to 0.01 to use the proxy loss
+proxy_temperature: 0.11
+proxy_orthogonal_init: True
+num_proxies: FILL_LATER ## usually set to the number of classes in the dataset
+use_proxy_head: False ## if True, use a linear layer to project the CLS token before computing the proxy loss
+
+## cross-entropy loss
+cross_entropy_lambda: 0.0 ## used in JUMPCP, So2Sat for classification tasks. Set to 0.01 to use the cross-entropy loss
+cross_entropy_temperature: 5.0
+
+## diverse regularization
+diverse_patch_token_weight: 0.00001
+diverse_patch_token_gamma_s: 1.0
+diverse_patch_token_gamma_d: 4.0
+diverse_channel_token_weight: 0.0001
+diverse_channel_token_temperature: 0.1
+
+## MAE loss
+mae_lambda: 0.99 ## set to 0 to disable the MAE loss
+mae_recon_fourier_lambda: 0.01
+mae_loss_norm: norm_pix_loss
+
+################### channel-aware decoder ###################
+decoder:
+  decoder_type: chamaevit_decoder 
+  depth: 2  
+  embed_dim: ~
+  mlp_ratio: 4
+  norm_layer: 
+    _partial_: true
+    _target_: torch.nn.LayerNorm
+    eps: 1e-06
+  num_heads: 16
+  qkv_bias: false 
+  mask_recon_fourier_loss: True
+  dcp_mask_ratio: 0.25  ## for DCP Alternate Masking (dcp_p_patch=dcp_p_channel=0.5), set `dcp_mask_ratio` to 0.25; For DCP Combination Masking (dcp_p_patch=dcp_p_channel=0), can set a higher value (try 0.25 and 0.75)
+  dcp_at_least_mask_one_channel: False
+  ### two simple config: set dcp_p_patch=dcp_p_channel=0.5 for DCP Alternate Masking, and dcp_p_patch=dcp_p_channel=0 for DCP Combination Masking
+  dcp_p_patch: 0.5
+  dcp_p_channel: 0.5

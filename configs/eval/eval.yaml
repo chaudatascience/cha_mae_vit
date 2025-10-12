@@ -1,0 +1,19 @@
+eval_batch_size: 1024
+eval_every_epochs: 5
+eval_before_training: false ## if true, will evaluate before training
+
+chammiv1:
+  dest_dir: chammiv1_results 
+  feature_dir: chammiv1_feat_outputs
+  root_dir: /projectnb/morphem/data_70k/ver2/morphem_70k_version2/
+  meta_csv_file: FILL_LATER
+  classifiers:
+    - knn
+  classifier: FILL_LATER  ## placeholder
+  feature_file: features.npy
+  use_gpu: True
+  knn_metric: FILL_LATER ## placeholder
+  knn_metrics:
+    - cosine
+  clean_up: True
+  umap: False

@@ -1,0 +1,116 @@
+## Choose a dataset for training
+training_dataset: chammiv1  ## choices: {chammiv1, jumpcp, so2sat}. 
+
+########## CHAMMI Dataset
+chammiv1:
+  root_dir: /projectnb/morphem/data_70k/ver2/morphem_70k_version2
+  csv_path: /projectnb/morphem/data_70k/ver2/morphem_70k_version2/morphem70k_v2.csv ## metadata can be found in `assets/morphem70k_v2.csv`
+  num_classes: 14 
+  in_chans: 12 
+  img_size: [224, 224]
+  collate_fn_name: padding  ## pad images to the max number of channels (i.e., 5 channels). Refer to `morphem70k_collate_with_padding()` in `dataset/chammiv1.py` for more details.
+  channel_ids: 
+    Allen:
+      - 0 # nucleus 
+      - 1 # membrane 
+      - 2 # protein 
+    HPA:
+      - 3 # microtubules 
+      - 4 # protein 
+      - 5 # nucleus 
+      - 6 # endoplasmic reticulum 
+    CP:
+      - 7 # nucleus 
+      - 8 # endoplasmic reticulum 
+      - 9 # RNA
+      - 10 # golgi body 
+      - 11  # mitochondria 
+  normalization:
+    use_mean_std: True # if False, do nothing (only scale from [0-255] to [0-1])
+    Allen:
+      mean: [0.17299628, 0.21203272, 0.06717163]
+      std: [0.31244728, 0.33736905, 0.15192129]
+    HPA:
+      mean:  [0.08290479, 0.041127298, 0.064044416, 0.08445485]
+      std:  [0.16213107, 0.1055938, 0.17713426, 0.1631108]
+    CP:
+      mean:  [0.09957531, 0.19229747, 0.16250895, 0.1824028, 0.14978175]
+      std:   [0.1728119, 0.16629605, 0.15171643, 0.14863704, 0.1524553]
+
+
+########### JUMP-CP Dataset
+jumpcp:
+  root_dir: /projectnb/ivc-ml/chaupham/data ## should contain a jumpcp folder
+  use_hdf5: true
+  num_classes: 161
+  in_chans: 8
+  img_size: [224, 224]
+  channels:  ## Total 8 channels, ID from 0->7
+    train: [0,1,2,3,4,5,6,7] 
+    valid: [0,1,2,3,4,5,6,7]
+    test: [0,1,2,3,4,5,6,7]
+    test_partial: [0,1,2,3,4]  ## only use first 5 channels for testing
+  channel_ids: [0,1,2,3,4,5,6,7] 
+  normalization:
+    use_mean_std: True ## if False, do nothing (only scale from [0-255] to [0-1])
+    mean: [0.01581075921231003, 0.006140922498382506, 0.014798741106504431, 0.013570686834169905, 0.016362028432960873, 0.026590312836544904, 0.026617198824059368, 0.026580865997500865]
+    std: [0.06791544660570861, 0.0471212480637794, 0.06653356109197056, 0.05907755398543979, 0.07044752235635533, 0.08485790724206006, 0.08498261058688023, 0.08486073954939445]
+
+
+
+########### So2Sat Dataset
+so2sat:
+  root_dir: /projectnb/ivc-ml/chaupham/data/so2sat/second_version/m1483140
+  use_hdf5: true
+  num_classes: 17
+  in_chans: 18
+  img_size: [32, 32]
+  channels:  ## Total 8 channels, ID from 0->7
+      train: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+      valid: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+      test: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+      test_partial: [0, 1, 2, 3, 4, 5, 6, 7]
+  channel_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+  normalization:
+    use_mean_std: True ## if False, do nothing (only scale from [0-255] to [0-1])
+    mean: [ -3.5912242e-05,
+        -7.658551e-06,
+        5.937501e-05,
+        2.516598e-05,
+        0.044198506,
+        0.25761467,
+        0.0007556685,
+        0.0013503395,
+        0.12375654,
+        0.109277464,
+        0.101086065,
+        0.114239536,
+        0.15926327,
+        0.18147452,
+        0.17457514,
+        0.1950194,
+        0.15428114,
+        0.109052904]
+    std: [
+        0.17555329,
+        0.17556609,
+        0.4599934,
+        0.45599362,
+        2.855352,
+        8.322579,
+        2.44937,
+        1.464371,
+        0.0395863,
+        0.047778852,
+        0.066362865,
+        0.063593246,
+        0.07744504,
+        0.09099384,
+        0.09217117,
+        0.10162713,
+        0.09989747,
+        0.0877891
+    ]
+
+
+    

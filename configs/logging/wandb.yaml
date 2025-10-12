@@ -1,0 +1,11 @@
+use_wandb: True
+log_interval: 200
+run_name: ~  # set to ~ for auto setting
+num_images_to_log: 0 # set <= 0 to disable this
+log_imgs_every_n_epochs: 0  # used when `num_images_to_log` > 0
+project_name: "chammiv2"  # set to ~ for auto setting
+tag: ~
+notes: ~
+scc_jobid: ~
+output_dir: /net/ivcfs5/mnt/data/chaupham/outputs/chammiv2project/outputs
+report_to: ~

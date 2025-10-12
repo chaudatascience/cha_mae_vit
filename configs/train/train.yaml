@@ -1,0 +1,32 @@
+resume_from_checkpoint: ~ ## e.g., /net/ivcfs5/mnt/data/chaupham/outputs/chammiv2project/outputs/2025-Apr-30--seed_2025/checkpoint-2/
+seed: ~
+train_epochs: 100
+use_torch_compile: false
+train_steps: ~ ## default None if `train_epochs` is set
+weight_dtype: fp32 ## Choices: {fp16, fp32, bf16}
+checkpointing_epochs: 1
+checkpointing_limit: 1
+batch_size: 64
+gradient_accumulation_steps: 1
+mixed_precision: "no"
+learning_rate: 0.0004 # 4.0e-05 
+
+optimizer: adamw
+beta1: 0.9
+beta2: 0.999
+epsilon: 1e-8
+weight_decay: 5.0e-5 # 1e-4
+max_grad_norm: 1.0 ## set ~ to disable gradient clipping
+
+num_workers: 6
+pin_memory: true
+# gradient_checkpointing: true
+nccl_timeout: 10800
+show_progress_bar: false
+debug: false
+
+lr_scheduler: cosine # choices: {"cosine", "cosine_with_restarts", "polynomial", "constant", "constant_with_warmup", "piecewise_constant"}
+lr_warmup_epochs: 5
+lr_num_cycles: 1
+lr_power: 1.0
+lr_min: 1e-5
