@@ -104,7 +104,7 @@ For more detail, you can refer to [So2Sat-LCZ42
  repo](https://github.com/zhu-xlab/So2Sat-LCZ42?tab=readme-ov-file). 
 
 
-## 4. Cloud-38
+## 4. 38-Cloud
 
 We use the Cloud Segmentation dataset from [here](https://github.com/SorourMo/38-Cloud-A-Cloud-Segmentation-Dataset).
 It contains 4 channels (R, G, B, NIR) with image size of 384x384. 
