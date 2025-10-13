@@ -103,6 +103,12 @@ wget --no-check-certificate https://dataserv.ub.tum.de/s/m1454690/download?path=
 For more detail, you can refer to [So2Sat-LCZ42
  repo](https://github.com/zhu-xlab/So2Sat-LCZ42?tab=readme-ov-file). 
 
+
+## 4. Cloud-38
+
+We use the Cloud Segmentation dataset from [here](https://github.com/SorourMo/38-Cloud-A-Cloud-Segmentation-Dataset).
+It contains 4 channels (R, G, B, NIR) with image size of 384x384. 
+To train the cloud segmentation task, a ViT Segmentation head (`models/segmentation.py`) is added and trained with the BCE-Dice loss (`models/loss_func.py` -> `DiceBCELoss()`). Our experiments use the 38-Cloud_training folder, with metadata provided in assets/cloud38_split.csv.
 ---
 
 # Training 
