@@ -16,6 +16,100 @@ import torch.nn as nn
 from einops import rearrange
 
 
+# Utility methods
+def soft_dice_loss(input: Tensor, target: Tensor, smooth: float):
+    loss = 1 - _soft_dice_coeff(input, target, smooth, focusing_param=1.0)
+    return loss
+
+
+def focal_dice_loss(input: Tensor, target: Tensor, smooth: float, focusing_param: float):
+    loss = 1 - _soft_dice_coeff(input, target, smooth, focusing_param)
+    return loss
+
+
+def _soft_dice_coeff(input: Tensor, target: Tensor, smooth: float, focusing_param: float) -> Tensor:
+    i = torch.sum(target)
+    j = torch.sum(input)
+    intersection = torch.sum(target * input)
+    # formula is 2*(p_t*p_e)^gamma/(p_t+p_e)
+    score = (2.0 * (intersection**focusing_param) + smooth) / (i + j + smooth)
+    return score.mean()
+
+
+def focal_binary_loss(input: Tensor, target: Tensor, focusing_param: float, eps: float = 1e-6):
+    targets = target.view(-1)
+    probs = input.view(-1)
+
+    # Formula is
+    # -(p_t*(1-p_e)^gamma)*log(p_e) for p_t=1; and
+    # -(1-p_t)*(p_e)^gamma)*log(1-p_e) for p_t=0;
+    # from : https://arxiv.org/pdf/1708.02002.pdf
+    losses = -(targets * torch.pow((1.0 - probs), focusing_param) * torch.log(probs + eps)) - (
+        (1.0 - targets) * torch.pow(probs, focusing_param) * torch.log(1.0 - probs + eps)
+    )
+    loss = torch.mean(losses)
+    return loss
+
+
+def soft_cldice(input, target, iter=100, smooth=1):
+    score = cldice(input, target, iter, smooth)
+    return 1 - score.mean()
+
+
+class DiceBCELoss(nn.Module):
+    def __init__(
+        self,
+        loss_type: str = "BCE+Dice",
+        focusing_param_bce: float = 2,
+        focusing_param_dice: float = 0.5,
+    ):
+        super(DiceBCELoss, self).__init__()
+        self.loss_type = loss_type
+        self.focusing_param_bce = focusing_param_bce
+        self.focusing_param_dice = focusing_param_dice
+
+        # Fixed parameters
+        self.smooth = 1.0
+        self.eps: float = 1e-6
+        self.bce_loss: nn.Module = nn.BCELoss()
+
+        self.loss_fn = self._get_loss_fn_for_type(loss_type)
+
+    def _get_loss_fn_for_type(self, loss_type: str):
+        loss_fns = {
+            "BCE+Dice": self.bce_plus_dice,
+        }
+        return loss_fns[loss_type]
+
+    def __call__(self, input: Tensor, target: Tensor):
+        return self.loss_fn(input, target)
+
+    def bce_plus_dice(self, input: Tensor, target: Tensor):
+        a = self.bce_loss(input, target)
+        b = soft_dice_loss(input, target, self.smooth)
+        return a + b
+
+    def bce_plus_focal_dice(self, input: Tensor, target: Tensor):
+        a = self.bce_loss(input, target)
+        b = focal_dice_loss(input, target, self.smooth, self.focusing_param_dice)
+        return a + b
+
+    def focal_bce_plus_dice(self, input: Tensor, target: Tensor):
+        a = focal_binary_loss(input, target, self.focusing_param_bce)
+        b = soft_dice_loss(input, target, self.smooth)
+        return a + b
+
+    def focal_bce_plus_focal_dice(self, input: Tensor, target: Tensor):
+        a = focal_binary_loss(input, target, self.focusing_param_bce)
+        b = focal_dice_loss(input, target, self.smooth, self.focusing_param_dice)
+        return a + b
+
+    def dice_cldice_loss(self, input: Tensor, target: Tensor):
+        a = soft_dice_loss(input, target, self.smooth)
+        b = soft_cldice(input, target)
+        return a + b
+
+
 def pairwise_distance_v2(proxies, x, squared=False):
     if squared:
         return (torch.cdist(x, proxies, p=2)) ** 2
