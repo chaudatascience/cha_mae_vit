@@ -41,7 +41,7 @@ chammiv1:
 ########### JUMP-CP Dataset
 jumpcp:
   root_dir: /projectnb/ivc-ml/chaupham/data ## should contain a jumpcp folder
-  use_hdf5: false ## if true, load data from an hdf5 file. Otherwise, load from png files 
+  use_hdf5: false ## if true, load data from an hdf5 file. Otherwise, load image files from the data folder
   num_classes: 161
   in_chans: 8
   img_size: [224, 224]
@@ -61,7 +61,7 @@ jumpcp:
 ########### So2Sat Dataset
 so2sat:
   root_dir: /projectnb/ivc-ml/chaupham/data/so2sat/second_version/m1483140
-  use_hdf5: false ## if true, load data from an hdf5 file. Otherwise, load from png files 
+  use_hdf5: false ## if true, load data from an hdf5 file. Otherwise, load image files from the data folder
   num_classes: 17
   in_chans: 18
   img_size: [32, 32]
