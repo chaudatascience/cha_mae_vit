@@ -47,8 +47,10 @@ decoder:
   num_heads: 16
   qkv_bias: false 
   mask_recon_fourier_loss: True
-  dcp_mask_ratio: 0.25  ## for DCP Alternate Masking (dcp_p_patch=dcp_p_channel=0.5), set `dcp_mask_ratio` to 0.25; For DCP Combination Masking (dcp_p_patch=dcp_p_channel=0), can set a higher value (try 0.25 and 0.75)
   dcp_at_least_mask_one_channel: False
-  ### two simple config: set dcp_p_patch=dcp_p_channel=0.5 for DCP Alternate Masking, and dcp_p_patch=dcp_p_channel=0 for DCP Combination Masking
-  dcp_p_patch: 0.5
-  dcp_p_channel: 0.5
+  #### Two simple configs for a good starting point:
+  ## DCP Combination Masking: Combines both channel and patch masks into a single mask. Set `dcp_p_patch` = `dcp_p_channel` = 0 for this option. As for `dcp_mask_ratio`,  as we already mask out some channels, using a small patch mask ratio like 0.25 works well
+  ## DCP Alternate Masking: Alternates between channel mask and patch mask. To use this, set `dcp_p_patch` = `dcp_p_channel` = 0.5. For  `dcp_mask_ratio`, it can set a higher value (e.g, 0.75)
+  dcp_p_patch: 0.5  ## a float number, range [0, 1]
+  dcp_p_channel: 0.5  ## a float number, range [0, 1].   note `dcp_p_patch` + `dcp_p_channel` <= 1.
+  dcp_mask_ratio: 0.25  ##  a float number, range (0, 1).  For DCP Combination Masking, set to 0.25; For DCP Alternate Masking, we can try a higher value like 0.75
