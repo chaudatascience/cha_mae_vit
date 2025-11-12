@@ -75,8 +75,6 @@ class Trainer:
         ## prepare model
         self.model = self.prepare_models()
 
-        ## TODO: make flag to skip this if only inference
-        ## https://huggingface.co/docs/accelerate/quicktour for validation and testing
         self.optimizer, self.lr_scheduler = self.prepare_optimizer()
         self.prepare_for_training()
 
@@ -245,16 +243,12 @@ class Trainer:
 
         return model
 
-    def prepare_optimizer(self, reinit_step: int = 0) -> tuple[torch.optim.Optimizer, Any]:
-        """
-        reinit_step: used for reinitializing optimizer and lr_scheduler after training for `reinit_step`.
-        """
+    def prepare_optimizer(self) -> tuple[torch.optim.Optimizer, Any]:
         self.logger.info("Initializing optimizer and lr scheduler")
 
         learning_rate = self.cfg.train.learning_rate
         scheduler_name = self.cfg.train.lr_scheduler
 
-        # trainable_parameters = list(filter(lambda p: p.requires_grad, self.model.parameters()))
         all_parameters = list(self.model.parameters())
 
         transformer_parameters_with_lr = {
@@ -282,15 +276,11 @@ class Trainer:
 
         num_update_steps_per_epoch = math.ceil(len(self.train_loader) / self.cfg.train.gradient_accumulation_steps)
         num_warmup_steps = self.cfg.train.lr_warmup_epochs * num_update_steps_per_epoch
-        if reinit_step == 0:  ## regular training
-            if self.cfg.train.train_steps is None:
-                self.cfg.train.train_steps = self.cfg.train.train_epochs * num_update_steps_per_epoch
-                self.overwrote_max_train_steps = True
-            total_training_steps = self.cfg.train.train_steps
-        else:  ## reinit optimizer and lr_scheduler after training for `reinit_step` steps
-            #  `self.cfg.train.train_steps` here is already adjusted to distributed training, thus, the total steps is:
-            total_training_steps = self.cfg.train.train_steps * self.accelerator.num_processes
-            total_training_steps -= reinit_step * self.accelerator.num_processes  ## num steps left to train
+
+        if self.cfg.train.train_steps is None:
+            self.cfg.train.train_steps = self.cfg.train.train_epochs * num_update_steps_per_epoch
+            self.overwrote_max_train_steps = True
+        total_training_steps = self.cfg.train.train_steps
 
         use_deepspeed_lr_scheduler = (
             self.accelerator.state.deepspeed_plugin is not None and "scheduler" in self.accelerator.state.deepspeed_plugin.deepspeed_config
@@ -495,7 +485,6 @@ class Trainer:
                         "data_time[s]": round(data_time.avg, 4),
                         "batch_time[s]": round(batch_time.avg, 2),
                     }
-                    # progress_bar.set_postfix(batch_logs)
                     self.logger.info(batch_logs, step=global_step)
                     ## reset meters
                     batch_time.reset()

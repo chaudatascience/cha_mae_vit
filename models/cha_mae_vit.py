@@ -583,7 +583,6 @@ class ChAMAEViT(nn.Module):
         valid_channel_masks: Tensor | None = None,
     ):
         """ChA-MAEViT's Dynamic Channel and Patch Sampling"""
-
         B, L = batch_size, n_patches
         LARGE_VALUE_FOR_PADDING = 99
         VISIBLE_VALUE = 0  # small noise value for visible patches
