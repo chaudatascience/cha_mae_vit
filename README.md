@@ -50,18 +50,18 @@ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss
 
 ---
 
-# 🗃 Dataset
+# Dataset
 
 After downloading the following datasets, you need to update the paths in the config files `configs/data/train_data.yaml`.
 
 ## 1. CHAMMI
-CHAMMI consists of varying-channel images from three sources: WTC-11 hiPSC dataset (WTC-11, 3 channels), Human Protein Atlas (HPA, 4 channels), and Cell Painting datasets (CP, 5 channels).
+CHAMMI consists of varying-channel images from three sources: WTC-11 hiPSC dataset (WTC-11, 3 channels), Human Protein Atlas (HPA, 4 channels), and Cell Painting datasets (CP, 5 channels). We evaluate representation learning performance on the CHAMMI benchmark using nearest neighbor protocols based on feature sets from the paper.
 
 The dataset can be downloaded from https://doi.org/10.5281/zenodo.7988357
 
 Metadata file is stored at `assets/morphem70k_v2.csv`.
 
-More detail about the dataset can be found [here](https://github.com/chaudatascience/channel_adaptive_models?tab=readme-ov-file#dataset).
+You can find more details about the CHAMMI benchmark here [here](https://github.com/chaudatascience/channel_adaptive_models?tab=readme-ov-file#dataset).
 
 
 ## 2. JUMP-CP
@@ -83,7 +83,7 @@ s3://insitro-research-2023-context-vit
     ├──  BR00116993.pq
     └──  BR00117000.pq
 ```
-We conduct experiments on the **BR00116991** dataset, which requires downloading `platemap_and_metadata/`, `BR00116991/` folders, and `BR00116991.pq`.
+We conduct experiments on the **BR00116991** dataset, which requires downloading `platemap_and_metadata/`, `BR00116991/` folders, and `BR00116991.pq`. 
 First, you need to install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), then run these commands in the Terminal:
 ```
 aws s3 cp s3://insitro-research-2023-context-vit/jumpcp/platemap_and_metadata jumpcp/platemap_and_metadata --recursive --no-sign-request
@@ -91,6 +91,7 @@ aws s3 cp s3://insitro-research-2023-context-vit/jumpcp/BR00116991 jumpcp/BR0011
 aws s3 cp s3://insitro-research-2023-context-vit/jumpcp/BR00116991.pq jumpcp/BR00116991.pq --no-sign-request
 ```
 
+We evaluate classification performance on this dataset, which has 161 classes (160 perturbations and a control treatment).
 You can refer to [insitro's dataset repo](https://github.com/insitro/ContextViT) for further details. 
 
 ## 3. So2Sat 
@@ -100,6 +101,8 @@ We use the city split (version 2) of the So2Sat dataset. The dataset can be down
 wget --no-check-certificate https://dataserv.ub.tum.de/s/m1454690/download?path=%2F&files=validation.h5&downloadStartSecret=p5bjok57fil
 ```
 
+
+The dataset consists of 17 classes, each representing a distinct climate zone. We evaluate classification performance on this dataset.
 For more detail, you can refer to [So2Sat-LCZ42
  repo](https://github.com/zhu-xlab/So2Sat-LCZ42?tab=readme-ov-file). 
 
@@ -132,7 +135,7 @@ python main.py ++train.batch_size=128
 ```
 ---
 
-To reproduce our results in Table 1, please refer to [train_scripts.sh](https://github.com/chaudatascience/cha_mae_vit/blob/main/train_scripts.sh). 
+To reproduce our results in Table 1, please refer to [train_scripts.sh](https://github.com/chaudatascience/cha_mae_vit/blob/main/train_scripts.sh). We tested this repo and provided the training logs in the `training_logs` folder for your reference.
 
 # Logging & Monitoring
 - **Experiment tracking** through Weights & Biases: `configs/logging/wandb.yaml`. If you want to disable it, set `use_wandb` to `False`.

@@ -139,7 +139,6 @@ class ChAMAEViT(nn.Module):
         diverse_patch_token_gamma_s=0.0,
         diverse_patch_token_gamma_d=0.0,
         diverse_channel_token_weight=0.0,
-        diverse_channel_token_temperature=0.11,
         proxy_loss_lambda=1.0,
         proxy_temperature=0.11,
         proxy_orthogonal_init=True,
@@ -234,6 +233,7 @@ class ChAMAEViT(nn.Module):
         self.diverse_channel_token_weight = diverse_channel_token_weight
 
         if self.diverse_channel_token_weight > 0:
+            diverse_channel_token_temperature = cross_entropy_temperature if self.use_cross_entropy_loss else 0.1
             self.channel_token_proxies = torch.nn.Parameter((torch.randn(in_chans, embed_dim) / 8))
             nn.init.orthogonal_(self.channel_token_proxies)
 

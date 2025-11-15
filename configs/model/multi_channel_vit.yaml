@@ -27,7 +27,6 @@ diverse_patch_token_weight: 0.00001
 diverse_patch_token_gamma_s: 1.0
 diverse_patch_token_gamma_d: 4.0
 diverse_channel_token_weight: 0.0001
-diverse_channel_token_temperature: 0.1
 
 ## MAE loss
 mae_lambda: 0.99 ## set to 0 to disable the MAE loss
