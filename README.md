@@ -61,7 +61,7 @@ The dataset can be downloaded from https://doi.org/10.5281/zenodo.7988357
 
 Metadata file is stored at `assets/morphem70k_v2.csv`.
 
-You can find more details about the CHAMMI benchmark here [here](https://github.com/chaudatascience/channel_adaptive_models?tab=readme-ov-file#dataset).
+You can find more details about the CHAMMI benchmark [here](https://github.com/chaudatascience/channel_adaptive_models?tab=readme-ov-file#dataset).
 
 
 ## 2. JUMP-CP
